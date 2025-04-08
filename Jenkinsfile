@@ -1,37 +1,60 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:22.14.0' 
-        }
+    agent any
+
+    environment {
+        NETLIFY_SITE_ID = '875b136f-327b-4b64-a378-03a97218b54d'
+        NETLIFY_AUTH_TOKEN = credentials('assign-2')
     }
-    
+
     stages {
         stage('Build') {
+            agent {
+                docker {
+                    image 'node:22.14.0-alpine'
+                    reuseNode true
+                }
+            }
             steps {
-                sh 'npm install'
+                sh '''
+                    ls -la
+                    node --version
+                    npm --version
+                    npm install
+                    npm run build
+                    ls -la
+                '''
             }
         }
-        
         stage('Test') {
+            agent {
+                docker {
+                    image 'node:22.14.0-alpine'
+                    reuseNode true
+                }
+            }
             steps {
-                sh 'npm test App.test.js'
+                sh '''
+                    test -f build/index.html
+                    npm test
+                '''
             }
         }
+        stage('Deploy') {
+            agent {
+                docker {
+                    image 'node:22.14.0-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    npm install netlify-cli
+                    node_modules/.bin/netlify --version
+                    echo "Deploying to production at Site ID: $NETLIFY_SITE_ID"
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --prod '--dir=build'
+                '''
+            }
+        } 
     }
-
-    
 }
-
-/*
-post {
-        always {
-            echo 'Pipeline completed - check logs for details'
-        }
-        success {
-            echo 'Build and tests passed successfully! ✅'
-        }
-        failure {
-            echo 'Build or tests failed! ❌'
-        }
-    }
-*/
