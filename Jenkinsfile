@@ -19,7 +19,11 @@ pipeline {
         }
     }
 
-    post {
+    
+}
+
+/*
+post {
         always {
             echo 'Pipeline completed - check logs for details'
         }
@@ -30,4 +34,4 @@ pipeline {
             echo 'Build or tests failed! ❌'
         }
     }
-}
+*/
