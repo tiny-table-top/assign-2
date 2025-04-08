@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        NETLIFY_SITE_ID = '875b136f-327b-4b64-a378-03a97218b54d'
+        NETLIFY_SITE_ID = '106b43d0-b9c5-4380-8d5b-2068e702a4db'
         NETLIFY_AUTH_TOKEN = credentials('assign-2')
     }
 
@@ -35,7 +35,7 @@ pipeline {
             steps {
                 sh '''
                     test -f build/index.html
-                    npm test App.test.js
+                    npm test
                 '''
             }
         }
